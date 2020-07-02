@@ -62,13 +62,14 @@ def udf_with_torch_ops(device=-1):
 # Events (operator invocations) that are expected to be ran as part of the above
 # function.
 EXPECTED_REMOTE_EVENTS = [
-    "ones",
-    "ones",
-    "add",
-    "mul",
-    "relu",
-    "threshold",
-    "sigmoid",
+    "aten::ones",
+    "aten::ones",
+    "aten::add",
+    "aten::mul",
+    "aten::relu",
+    "aten::threshold",
+    "aten::sigmoid",
+    "aten::sigmoid",
 ]
 
 
@@ -1451,9 +1452,9 @@ class RpcTest(RpcAgentTestFixture):
         outer_profile_rref.rpc_sync().__exit__(None, None, None)
 
         inner_events = rpc.rpc_sync(dst_worker_name, get_events_from_profile, (inner_profile_rref,))
-        self._assert_top_level_events(inner_events, ['sub'])
+        self._assert_top_level_events(inner_events, ['aten::sub'])
         outer_events = rpc.rpc_sync(dst_worker_name, get_events_from_profile, (outer_profile_rref,))
-        self._assert_top_level_events(outer_events, ['add', 'sub'])
+        self._assert_top_level_events(outer_events, ['aten::add', 'aten::sub'])
 
         inner_profile_rref.rpc_sync().key_averages()
         outer_profile_rref.rpc_sync().key_averages()
